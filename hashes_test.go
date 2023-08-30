@@ -1,0 +1,88 @@
+package compareHashes
+
+import (
+	"crypto/sha1"
+	"crypto/sha256"
+	"github.com/cespare/xxhash"
+	"github.com/dgryski/go-marvin32"
+	"github.com/mfonda/simhash"
+	"github.com/spaolacci/murmur3"
+	"math/rand"
+	"os"
+	"testing"
+)
+
+var text []byte
+
+const TextLen = 3_000_000
+
+func BenchmarkSdbm(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sdbm(text)
+	}
+}
+
+func BenchmarkDjb2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		djb2(text)
+	}
+}
+
+func BenchmarkSha256(b *testing.B) {
+	hash := sha256.New()
+	for i := 0; i < b.N; i++ {
+		hash.Sum(text)
+	}
+}
+
+func BenchmarkSha1(b *testing.B) {
+	hash := sha1.New()
+	for i := 0; i < b.N; i++ {
+		hash.Sum(text)
+	}
+}
+
+func BenchmarkMurmur3(b *testing.B) {
+	hash := murmur3.New64()
+	for i := 0; i < b.N; i++ {
+		hash.Sum(text)
+	}
+}
+
+func BenchmarkXXHash(b *testing.B) {
+	hash := xxhash.New()
+	for i := 0; i < b.N; i++ {
+		hash.Sum(text)
+	}
+}
+
+var marvin32Seed uint64
+
+func BenchmarkMarvin32(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		marvin32.Sum32(marvin32Seed, text)
+	}
+}
+
+var featureSet simhash.FeatureSet
+
+func BenchmarkSimhash(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		simhash.Simhash(featureSet)
+	}
+}
+
+func setup() {
+	text, _ = os.ReadFile("book-war-and-peace.txt")
+	i := rand.Intn(len(text) - TextLen)
+	text = text[i : i+TextLen]
+	marvin32Seed = rand.Uint64()
+	featureSet = simhash.NewWordFeatureSet(text)
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	// shutdown()
+	os.Exit(code)
+}
