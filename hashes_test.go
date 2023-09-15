@@ -4,7 +4,6 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"github.com/cespare/xxhash"
-	"github.com/dgryski/go-marvin32"
 	"github.com/mfonda/simhash"
 	"github.com/spaolacci/murmur3"
 	"math/rand"
@@ -56,14 +55,6 @@ func BenchmarkXXHash(b *testing.B) {
 	}
 }
 
-var marvin32Seed uint64
-
-func BenchmarkMarvin32(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		marvin32.Sum32(marvin32Seed, text)
-	}
-}
-
 var featureSet simhash.FeatureSet
 
 func BenchmarkSimhash(b *testing.B) {
@@ -76,7 +67,6 @@ func setup() {
 	text, _ = os.ReadFile("book-war-and-peace.txt")
 	i := rand.Intn(len(text) - TextLen)
 	text = text[i : i+TextLen]
-	marvin32Seed = rand.Uint64()
 	featureSet = simhash.NewWordFeatureSet(text)
 }
 
