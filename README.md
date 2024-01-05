@@ -8,67 +8,41 @@ The list of hash functions for comparison:
 * sha256
 * murmur3 (github.com/spaolacci/murmur3)
 * xxHash (github.com/cespare/xxhash)
+* aesHash
 * simhash (https://github.com/mfonda/simhash)
 
 
-Command: `go test -bench=. -benchtime=5s`
+x86 processor supports of aes instructions:
 
-## Header
+```text
+cat /proc/cpuinfo
+...
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust sgx bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d arch_capabilities
+...
+```
+
+Command:
+
+```bash
+go test -bench=. -benchtime=5s
+
+```
+
+## Results
+
+Text length = 3M
 
 ```
 goos: linux
 goarch: amd64
 pkg: compareHashes
 cpu: Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz
-```
-
-
-## Results
-
-Length of the text = 10K
-
-```
-BenchmarkSdbm-8          1000000              5146 ns/op
-BenchmarkDjb2-8          1000000              5015 ns/op
-BenchmarkSha256-8       31689594               190.8 ns/op
-BenchmarkSha1-8         47700940               130.8 ns/op
-BenchmarkMurmur3-8      962910477                6.082 ns/op
-BenchmarkXXHash-8       968513018                6.237 ns/op
-BenchmarkSimhash-8          5868           1005024 ns/op
-```
-
-Length of the text = 100K
-
-```
-BenchmarkSdbm-8           119226             50857 ns/op
-BenchmarkDjb2-8           120360             49943 ns/op
-BenchmarkSha256-8       32240737               190.2 ns/op
-BenchmarkSha1-8         47900412               129.5 ns/op
-BenchmarkMurmur3-8      978218433                6.005 ns/op
-BenchmarkXXHash-8       942319635                6.346 ns/op
-BenchmarkSimhash-8           445          13256837 ns/op
-```
-
-Length of the text = 1M
-
-```
-BenchmarkSdbm-8            10000            538815 ns/op
-BenchmarkDjb2-8            10000            530542 ns/op
-BenchmarkSha256-8       28745600               193.5 ns/op
-BenchmarkSha1-8         46466902               137.2 ns/op
-BenchmarkMurmur3-8      950074614                6.079 ns/op
-BenchmarkXXHash-8       951294382                6.230 ns/op
-BenchmarkSimhash-8            37         153814714 ns/op
-```
-
-Length of th text = 3M
-
-```
-BenchmarkSdbm-8             3955           1548929 ns/op
-BenchmarkDjb2-8             3842           1494095 ns/op
-BenchmarkSha256-8       30617457               196.2 ns/op
-BenchmarkSha1-8         45319993               137.1 ns/op
-BenchmarkMurmur3-8      982202215                6.155 ns/op
-BenchmarkXXHash-8       925098828                6.451 ns/op
-BenchmarkSimhash-8            12         479861198 ns/op
+BenchmarkSdbm-8             3742           1699309 ns/op
+BenchmarkDjb2-8             3524           1673717 ns/op
+BenchmarkSha256-8       26210958               220.8 ns/op
+BenchmarkSha1-8         38899916               135.1 ns/op
+BenchmarkMurmur3-8      926981096                6.151 ns/op
+BenchmarkXXHash-8       934610797                6.770 ns/op
+BenchmarkAes-8          478043392               11.83 ns/op
+BenchmarkSimhash-8            12         491083351 ns/op
 ```

@@ -1,6 +1,7 @@
 package compareHashes
 
 import (
+	"crypto/aes"
 	"crypto/sha1"
 	"crypto/sha256"
 	"github.com/cespare/xxhash"
@@ -13,7 +14,7 @@ import (
 
 var text []byte
 
-const TextLen = 3_000_000
+const TextLen = 1_000_000
 
 func BenchmarkSdbm(b *testing.B) {
 	for i := 0; i < b.N; i++ {
@@ -52,6 +53,17 @@ func BenchmarkXXHash(b *testing.B) {
 	hash := xxhash.New()
 	for i := 0; i < b.N; i++ {
 		hash.Sum(text)
+	}
+}
+
+func BenchmarkAes(b *testing.B) {
+	block, err := aes.NewCipher([]byte("1234567890123456"))
+	if err != nil {
+		b.Fatal(err)
+	}
+	dst := make([]byte, len(text))
+	for i := 0; i < b.N; i++ {
+		block.Encrypt(dst, text)
 	}
 }
 
